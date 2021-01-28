@@ -1,4 +1,4 @@
-from for_telegram_api import give_answer, get_first_message, wait_answer
+from for_telegram_api import give_answer, get_first_message, wait_answer, get_first_chat_id
 from info_for_test import questions
 
 def create_message_from_scroll(scroll, subject=""):
@@ -21,12 +21,17 @@ def check_user_answer(message, scroll):
 		return message
 
 
-def get_user_answer(interface, scroll):
+def get_user_answer(interface, scroll, test_chat_id):
 	message=create_message_from_scroll(scroll)
 	user_answer=None
 	while not user_answer:
 		if interface=="telegram":
 			wait_answer()
+
+			while test_chat_id!=get_first_chat_id():
+				give_answer("Sorry, somebody is testing, try later")
+				wait_answer()
+				
 			first_message=get_first_message()
 			user_answer=check_user_answer(first_message,scroll)
 		else:
@@ -42,7 +47,7 @@ def get_user_answer(interface, scroll):
 	return user_answer
 
 
-def asking_one_theme(interface, test_questions):
+def asking_one_theme(interface, test_questions, test_chat_id):
 	right_answers=0
 	final_message=""
 	for question in test_questions:
@@ -59,7 +64,7 @@ def asking_one_theme(interface, test_questions):
 		else:
 			print(question_message)
 
-		user_answer=get_user_answer(interface, answers)
+		user_answer=get_user_answer(interface, answers, test_chat_id)
 		final_message+=f"\n{question_message}\nВаш ответ - {user_answer}\nПравильный ответ - {correct_answer}"
 		right_answers+=check_correct_user_answer(user_answer, correct_answer)
 
@@ -69,10 +74,10 @@ def asking_one_theme(interface, test_questions):
 			"result": result}
 
 
-def asking_questions(interface, theme, difficulty, questions):
+def asking_questions(interface, theme, difficulty, questions, test_chat_id):
 	if theme!="all":
 		test_questions=questions[theme][difficulty]
-		result=asking_one_theme(interface, test_questions)
+		result=asking_one_theme(interface, test_questions, test_chat_id)
 		return result
 
 	else:
@@ -105,12 +110,13 @@ def asking_questions(interface, theme, difficulty, questions):
 
 def testing(interface):
 	choice_theme_message=create_message_from_scroll(questions.keys(), "тему")
+	test_chat_id=get_first_chat_id()
 	if interface=="telegram":
 		give_answer(choice_theme_message)
 	else:
 		print(choice_theme_message)
 
-	theme=get_user_answer(interface, questions.keys())
+	theme=get_user_answer(interface, questions.keys(), test_chat_id)
 
 	if theme=="all":
 		difficulties=("easy","medium","hard")
@@ -124,9 +130,9 @@ def testing(interface):
 	else:
 		print(choice_difficulty_message)
 	
-	difficulty=get_user_answer(interface, difficulties)
+	difficulty=get_user_answer(interface, difficulties, test_chat_id)
 	print(difficulty)
-	result=asking_questions(interface, theme, difficulty, questions)
+	result=asking_questions(interface, theme, difficulty, questions, test_chat_id)
 	result_test_message=f"\nРезультаты теста таковы\n{result['final_message']}\n\n {result['result']}% правильных ответов"
 
 	if interface=="telegram":
