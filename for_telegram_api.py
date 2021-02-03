@@ -18,7 +18,7 @@ def wait_answer():
 	result=[]
 	while len(result)==0:
 		updates=get_updates()
-		result= result["result"]
+		result= updates["result"]
 
 
 def get_first_update_id():
