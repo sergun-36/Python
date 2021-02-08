@@ -284,8 +284,7 @@ def get_rates_on_today(datas_for_answer):
 
 
 def handling_curr_request(user, message):
-	name=user["name"]
-	hello=f"Привет, {name}"
+	hello=f"Привет, {user}"
 
 	datas=get_data_for_answer(message)
 	if not datas:
