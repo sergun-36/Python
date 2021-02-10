@@ -4,26 +4,24 @@ from for_telegram_api import give_answer, wait_answer, get_user, get_first_messa
 from test_logic import testing
 
 
-def select_handling_answer(message):
+def select_handling_answer(message, user):
 	message=message.lower()
 	if message.find("курс")>=0:
-		user=get_user()
 		answer_message=handling_curr_request(user, message)
-		give_answer(answer_message)
-		return
+		return answer_message
 		
+	"""
 	if message.find("тест")>=0:
 		answer_message=testing("telegram")
-		give_answer(answer_message)
-		return 
+		return answer_message
+	""" 
 
 	if message.find("exit")>=0:
-		give_answer("Bye, bye .Я отключился")
-		return False
+		return "Bye, bye .Я отключился"
+			
+	return message
 	
-	give_answer(message)
-	
-
+"""
 def run_bot():
 	is_working=True
 	while is_working:
@@ -37,7 +35,7 @@ def run_bot():
 		
 if __name__=="__main__":
 	run_bot()
-
+"""
 
 
 
