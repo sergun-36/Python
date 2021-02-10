@@ -6,7 +6,8 @@ from bot_logic import select_handling_answer
 class Bot():
 
 	root_url=root_url
-
+	getUpdates="/getUpdates"
+	sendMessage="/sendMessage"
 
 	def __init__(self, token=token, username=username, bot_name=name):
 		self.token=token
@@ -15,7 +16,7 @@ class Bot():
 
 
 	def get_updates(self):
-		response=requests.get(f"{self.root_url}{self.token}/getUpdates")
+		response=requests.get(f"{self.root_url}{self.token}{self.getUpdates}")
 		status=response.status_code
 		if  status in (200, 201, 202):
 			updates=response.json()
@@ -27,8 +28,8 @@ class Bot():
 	def send_message(self, chat_id="", text="", update_id=0):
 		data={"chat_id": chat_id,
 			"text": text}
-		requests.post(f"{self.root_url}{self.token}/sendMessage", data)
-		requests.get(f"{self.root_url}{self.token}/getUpdates?offset={update_id+1}")
+		requests.post(f"{self.root_url}{self.token}{self.sendMessage}", data)
+		requests.get(f"{self.root_url}{self.token}{self.getUpdates}?offset={update_id+1}")
 
 	def wait_answer(self):
 		result=[]
